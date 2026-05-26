@@ -4,22 +4,15 @@ import axios from 'axios';
 import Header from './components/Header';
 import UploadZone from './components/UploadZone';
 import Loader from './components/Loader';
-import DashboardStats from './components/DashboardStats';
-import KeyInsights from './components/KeyInsights';
-import PDFPreview from './components/PDFPreview';
+import SummaryCards from './components/SummaryCards';
 import ResultsTable from './components/ResultsTable';
-import ExportMenu from './components/ExportMenu';
-import ThemeToggle from './components/ThemeToggle';
-import ProcessingSteps from './components/ProcessingSteps';
-import StarredClaims from './components/StarredClaims';
-import { AlertCircle, RotateCcw, Shield, Heart, ExternalLink } from 'lucide-react';
+import { AlertCircle, RotateCcw } from 'lucide-react';
 
 export default function App() {
   const [file, setFile] = useState(null);
   const [status, setStatus] = useState('idle'); // idle | processing | done | error
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
-  const [processingStep, setProcessingStep] = useState(1);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -52,25 +45,17 @@ export default function App() {
     if (!file) return;
 
     setStatus('processing');
-    setProcessingStep(1);
+    setError(null);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
 
       console.log('[App] Starting analysis for:', file.name);
-      
-      // Simulate step progression
-      const stepInterval = setInterval(() => {
-        setProcessingStep((prev) => (prev < 5 ? prev + 1 : 5));
-      }, 2000);
-
       const response = await axios.post(`${API_URL}/api/factcheck`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
-        timeout: 180000, // 3 minute timeout
+        timeout: 120000, // 2 minute timeout
       });
-
-      clearInterval(stepInterval);      });
 
       console.log('[App] Analysis response:', response.data);
 
@@ -82,36 +67,25 @@ export default function App() {
       setStatus('done');
     } catch (err) {
       console.error('[App] Analysis error:', err);
-      
-      let errorMessage = err.response?.data?.error || err.message || 'An error occurred';
+
+      let errorMessage =
+        err.response?.data?.error || err.message || 'An error occurred';
 
       // Add helpful hints for common errors
       if (err.code === 'ECONNABORTED') {
-        errorMessage = '⏱️ Request timed out. The PDF might be very large or the API is slow. Try:\n• A smaller PDF\n• Checking your internet connection\n• Waiting a moment and trying again';
+        errorMessage = 'Request timed out. Try a smaller PDF or check your internet connection.';
       } else if (err.message?.includes('timeout')) {
-        errorMessage = '⏱️ Analysis took too long. Try:\n• A PDF with fewer pages\n• A PDF with fewer claims\n• Checking backend server status';
-      } else if (err.response?.status === 400) {
-        errorMessage = '❌ ' + errorMessage;
-      } else if (err.response?.status === 500) {
-        errorMessage = '🔧 Server error. The backend might be down.\n\nTroubleshooting:\n• Check that backend is running\n• Check that API keys are set correctly\n• Try again in a few moments';
-      } else if (!err.response) {
-        errorMessage = '🔌 Cannot connect to backend. Make sure:\n• Backend is running (npm run dev in backend folder)\n• VITE_API_URL in .env matches your backend URL\n• No firewall is blocking localhost:5000';
-      } else {
-        errorMessage = `${err.response?.status || 'Unknown'} error: ${errorMessage}`;
+        errorMessage = 'Analysis is taking too long. Try a PDF with fewer pages or claims.';
+      } else if (!errorMessage) {
+        errorMessage = `${err.response?.status || 'Unknown'} error from server. Check that the backend is running.`;
       }
 
       setError(errorMessage);
       setStatus('error');
-    setProcessingStep(1);
     }
   };
 
-  const handleRe
-      
-      {/* Theme Toggle - positioned in top right */}
-      <div className="fixed top-6 right-6 z-50">
-        <ThemeToggle />
-      </div>set = () => {
+  const handleReset = () => {
     setFile(null);
     setStatus('idle');
     setReport(null);
@@ -122,7 +96,7 @@ export default function App() {
     <div className="flex flex-col min-h-screen bg-bg-base">
       <Header />
 
-      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 pb-16 md:pb-24">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <AnimatePresence mode="wait">
           {status === 'idle' && (
             <motion.div
@@ -130,12 +104,11 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-8 sm:py-12"
+              className="flex flex-col items-center justify-center min-h-96"
             >
-              <UploadZone gap-12"
-            >
-              <Loader />
-              <ProcessingSteps currentStep={processingStep}lyze={handleAnalyze}
+              <UploadZone
+                onFileSelect={handleFileSelect}
+                onAnalyze={handleAnalyze}
                 isAnalyzing={false}
               />
             </motion.div>
@@ -147,7 +120,7 @@ export default function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-16"
+              className="flex flex-col items-center justify-center min-h-96"
             >
               <Loader />
             </motion.div>
@@ -159,111 +132,79 @@ export default function App() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="space-y-8 pb-8"
+              className="space-y-8"
             >
-              {/* PDF Preview - Show extracted text */}
-              {report.extracted_text && (
-                <PDFPreview
-                  extractedText={report.extracted_text}
-                  filename={report.filename}
-                />
+              <SummaryCards
+                filename={report.filename}
+                total_claims={report.total_claims}
+                verified={report.verified}
+                inaccurate={report.inaccurate}
+                false_count={report.false_count}
+                processed_at={report.processed_at}
+              />
+
+              {report.total_claims > 0 && (
+                <ResultsTable claims={report.claims} />
               )}
 
-              {/* Dashboard Stats - Professional overview */}
-              {report.total_claims > 0 && (
-                <DashboardStats
-                  filename={report.filename}
-                  total_claims={report.total_claims}
-                  verified={report.verified}
-                  inaccurate={report.inaccurate}
-                  false_count={report.false_count}
-                  unverifiable={report.unverifiable || 0}
-                  accuracy_score={report.accuracy_score || 0}
-                  processing_time_seconds={report.processing_time_seconds || 0}
-                />
+              {report.total_claims === 0 && report.message && (
+                <div className="bg-slate-900/40 border border-slate-700 rounded-lg p-6 text-center">
+                  <p className="text-slate-300 text-lg">{report.message}</p>
+                </div>
               )}
 
-              {/* Key Insights - Analytics overview */}
-              {report.total_claims > 0 && (
-                <KeyInsights
-                  claims={report.claims}
-                  accuracy_score={report.accuracy_score || 0}
-                />
-              )}
-
-              {/* Detailed Results Table */}
-              {report.total_claims > 0 && (
-                <div className="space-y-4">
-                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-bold text-text-primary">All Claims</h3>
-                    </div>
-                    <StarredClaims claims={report.claims} />
-                  </div>
+              {report.total_claims > 0 && report.claims?.every(c => c.status === 'Unverifiable' || c.status === 'Error') && (
+                <div className="bg-yellow-900/20 border border-yellow-700 rounded-lg p-6">
+                  <h3 className="text-yellow-400 font-semibold mb-2">⚠️ Verification Temporarily Unavailable</h3>
+                  <p className="text-yellow-300 text-sm mb-3">
+                    {report.total_claims} claims were extracted but verification failed (likely API rate limit).
+                  </p>
+                  <p className="text-yellow-300/70 text-xs mb-3">
+                    Try again in a few minutes, or upgrade your API plan for unlimited verification.
+                  </p>
                   <ResultsTable claims={report.claims} />
                 </div>
-              )}blue-50 to-cyan-50 border border-blue-100 rounded-xl p-8 text-center shadow-sm"
-                >
-                  <p className="text-text-primary text-lg mb-2">📋 {report.message}</p>
-                  <p className="text-text-secondaryport.message && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 rounded-xl p-8 text-center"
-                >
-                  <p className="text-slate-300 text-lg mb-2">📋 {report.message}</p>
-                  <p className="text-slate-500 text-sm">Try a document with more factual claims like statistics, dates, or specific assertions.</p>
-                </motion.div>
               )}
-amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 shadow-sm"
-                >
-                  <h3 className="text-amber-800 font-bold mb-3 text-lg">⚠️ Verification Temporarily Unavailable</h3>
-                  <p className="text-amber-700 text-sm mb-4">
-                    {report.total_claims} claims were extracted but verification failed, likely due to API rate limits.
-                  </p>
-                  <p className="text-amber-7r from-yellow-900/30 to-yellow-900/10 border border-yellow-700 rounded-xl p-6"
-                >
-                  <h3 className="text-yellow-400 font-bold mb-3 text-lg">⚠️ Verification Temporarily Unavailable</h3>
-                  <p className="text-yellow-300 text-sm mb-4">
-                    {report.total_claims} claims were extracted but verification failed, likely due to API rate limits.
-                  </p>
-                  <p className="text-yellow-300/70 text-xs mb-4">
-                    💡 Solutions: Tflex-col sm:flex-row gap-4 pt-8">
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleReset}
-                  className="flex-1 bg-gradient-to-r from-brand-primary to-brand-dark text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/30 transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <RotateCcw size={20} />
-                  Analyze Another Document
-                </motion.button>
-                
-                {report && (
-                  <ExportMenu report={report} filename={report.filename} />
-                )}ame="flex gap-4">
-                <button
-                  onClick={handleReset}
-                  className="flex-1 bg-gradient-to-r from-brand-primary to-brand-hover text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/25 transition-all duration-300 flex items-center justify-center gap-2"
-                >
-                  <RotateCcw size={20} />
-                  Analyze Another Document
-                </button>
-              </div>100 border border-red-300 rounded-lg p-6 shadow-sm">
+
+              {report.message && !report.message.includes('No specific') && (
+                <div className="bg-slate-900/40 border border-slate-700 rounded-lg p-6 text-center">
+                  <p className="text-slate-300 text-lg">{report.message}</p>
+                </div>
+              )}
+
+              <button
+                onClick={handleReset}
+                className="w-full bg-gradient-to-r from-brand-primary to-brand-hover text-white font-semibold py-3 rounded-lg hover:shadow-lg transition flex items-center justify-center gap-2"
+              >
+                <RotateCcw size={20} />
+                Analyze Another Document
+              </button>
+            </motion.div>
+          )}
+
+          {status === 'error' && (
+            <motion.div
+              key="error"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="flex flex-col items-center justify-center min-h-96 gap-6"
+            >
+              <div className="w-full max-w-2xl bg-red-900/20 border border-red-700 rounded-lg p-6">
                 <div className="flex items-start gap-4">
-                  <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
+                  <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-red-800 mb-2">
+                    <h3 className="text-lg font-semibold text-red-400 mb-2">
                       Analysis Failed
                     </h3>
-                    <p className="text-red-700 text-sm mb-3 whitespace-pre-wrap">{error}</p>
-                    <div className="text-xs text-red-700 space-y-1 bg-red-50 p-3 rounded mt-3">
-                      <p>💡 <strong>Quick tips:</strong></p>
+                    <p className="text-red-300 text-sm mb-3">{error}</p>
+                    <div className="text-xs text-red-400/70 space-y-1 bg-red-950/30 p-3 rounded mt-3">
+                      <p>💡 <strong>Troubleshooting tips:</strong></p>
                       <ul className="list-disc list-inside space-y-1 mt-2">
-                        <li>Backend running? → <code className="bg-red-100 px-1 rounded">npm run dev</code> in backend/</li>
-                        <li>API keys set? → Check backend/.env (GROQ_API_KEY, TAVILY_API_KEY)</li>
-                        <li>Text-based PDF? → Not a scanned image</li>
-                        <li>Has facts? → PDFs with stats, dates, figures work best</li>
+                        <li>Make sure the PDF contains readable text (not scanned images)</li>
+                        <li>Ensure the backend server is running: <code className="bg-red-950 px-1 rounded">npm run dev</code> in the backend folder</li>
+                        <li>Check that API keys are set in backend/.env (GROQ_API_KEY, TAVILY_API_KEY)</li>
+                        <li>Try with a PDF that has statistics, dates, or specific facts</li>
                       </ul>
                     </div>
                   </div>
@@ -273,19 +214,7 @@ amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 shadow-sm"
               <div className="flex gap-4 w-full max-w-2xl">
                 <button
                   onClick={handleReset}
-                  className="flex-1 bg-gradient-to-r from-brand-primary to-brand-dark text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/30 transition-all duration-300"
-                >
-                  Try Again
-                </button>
-                <button
-                  onClick={() => {
-                    setFile(null);
-                    setStatus('idle');
-                  }}
-                  className="flex-1 border border-blue-200 text-text-secondary font-medium py-3 rounded-lg hover:bg-blue-5
-                <button
-                  onClick={handleReset}
-                  className="flex-1 bg-gradient-to-r from-brand-primary to-brand-hover text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/25 transition-all duration-300"
+                  className="flex-1 bg-gradient-to-r from-brand-primary to-brand-hover text-white font-semibold py-3 rounded-lg hover:shadow-lg transition"
                 >
                   Try Again
                 </button>
@@ -304,103 +233,11 @@ amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 shadow-sm"
         </AnimatePresence>
       </main>
 
-      <footer className="w-full relative z-10 border-t border-slate-800 bg-[#0B0F19]/90 backdrop-blur-md flex-shrink-0 mt-auto">
-        {/* Symmetric visual connection with Header: Top glowing gradient accent line */}
-        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-brand-primary/40 to-transparent"></div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-6 mb-10">
-            {/* Branding Column */}
-            <div className="space-y-4">
-              <div className="flex items-center gap-2">
-                <div className="bg-gradient-to-br from-brand-primary to-brand-hover p-1 rounded-md">
-                  <Shield className="w-4 h-4 text-white" />
-                </div>
-                <span className="text-white font-extrabold tracking-wider text-sm">FactGuard</span>
-                <span className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse inline-block" title="System Status: Online"></span>
-              </div>
-              <p className="text-slate-400 text-xs leading-relaxed max-w-xs">
-                Next-generation truth verification platform powered by state-of-the-art AI agents checking facts against live web data in real time.
-              </p>
-            </div>
-
-            {/* Features Column */}
-            <div>
-              <h4 className="text-slate-200 font-bold text-xs uppercase tracking-wider mb-4">Features</h4>
-              <ul className="space-y-2.5">
-                {[
-                  { name: 'PDF Analysis', href: '#' },
-                  { name: 'Real-time Verification', href: '#' },
-                  { name: 'Web Search Integration', href: '#' }
-                ].map((link, idx) => (
-                  <li key={idx}>
-                    <a 
-                      href={link.href} 
-                      className="text-slate-400 hover:text-brand-primary transition-all duration-300 text-xs flex items-center gap-1 group"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-brand-primary transition-colors"></span>
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">{link.name}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Resources Column */}
-            <div>
-              <h4 className="text-slate-200 font-bold text-xs uppercase tracking-wider mb-4">Resources</h4>
-              <ul className="space-y-2.5">
-                {[
-                  { name: 'Documentation', href: '#' },
-                  { name: 'API Reference', href: '#' },
-                  { name: 'Support Center', href: '#' }
-                ].map((link, idx) => (
-                  <li key={idx}>
-                    <a 
-                      href={link.href} 
-                      className="text-slate-400 hover:text-brand-primary transition-all duration-300 text-xs flex items-center gap-1 group"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-brand-primary transition-colors"></span>
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">{link.name}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Legal / Contact Column */}
-            <div>
-              <h4 className="text-slate-200 font-bold text-xs uppercase tracking-wider mb-4">Legal</h4>
-              <ul className="space-y-2.5">
-                {[
-                  { name: 'Privacy Policy', href: '#' },
-                  { name: 'Terms of Service', href: '#' },
-                  { name: 'Contact Us', href: '#', external: true }
-                ].map((link, idx) => (
-                  <li key={idx}>
-                    <a 
-                      href={link.href} 
-                      className="text-slate-400 hover:text-brand-primary transition-all duration-300 text-xs flex items-center gap-1.5 group"
-                    >
-                      <span className="w-1.5 h-1.5 rounded-full bg-slate-700 group-hover:bg-brand-primary transition-colors"></span>
-                      <span className="group-hover:translate-x-1 transition-transform duration-300">{link.name}</span>
-                      {link.external && <ExternalLink className="w-3 h-3 opacity-50 group-hover:opacity-100 transition-opacity" />}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          {/* Bottom copyright and tag */}
-          <div className="border-t border-slate-800/80 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-slate-500 text-xs text-center sm:text-left">
-              © {new Date().getFullYear()} FactGuard. All rights reserved.
-            </p>
-            <p className="text-slate-500 text-xs flex items-center gap-1 text-center sm:text-right">
-              Crafted with <Heart className="w-3 h-3 text-red-500 animate-pulse fill-red-500" /> & AI for absolute clarity.
-            </p>
-          </div>
+      <footer className="w-full border-t border-slate-700 bg-slate-900/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 text-center">
+          <p className="text-slate-400 text-sm">
+            FactGuard © 2024 — AI-Powered Fact-Checking
+          </p>
         </div>
       </footer>
     </div>

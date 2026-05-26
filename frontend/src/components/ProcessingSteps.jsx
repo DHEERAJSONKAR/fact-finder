@@ -1,1 +1,66 @@
-import { motion } from 'framer-motion'; \nimport { CheckCircle, Circle } from 'lucide-react'; \n\nexport default function ProcessingSteps({ currentStep = 1 }) { \n  const steps = [\n    { num: 1, label: 'Parsing PDF', icon: '📄' }, \n    { num: 2, label: 'Extracting Claims', icon: '🔍' }, \n    { num: 3, label: 'Web Search', icon: '🌐' }, \n    { num: 4, label: 'Verification', icon: '⚖️' }, \n    { num: 5, label: 'Report Generation', icon: '📊' }, \n]; \n\n  return (\n < div className =\"w-full max-w-2xl mx-auto\">\n      <div className=\"space-y-3\">\n        {steps.map((step, idx) => (\n          <motion.div\n            key={step.num}\n            initial={{ opacity: 0, x: -20 }}\n            animate={{ opacity: 1, x: 0 }}\n            transition={{ delay: idx * 0.1 }}\n            className=\"flex items-center gap-4\"\n          >\n            <div className=\"flex-shrink-0 relative\">\n              {step.num < currentStep ? (\n                <motion.div\n                  initial={{ scale: 0 }}\n                  animate={{ scale: 1 }}\n                  className=\"w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center\"\n                >\n                  <CheckCircle className=\"w-6 h-6 text-emerald-600\" />\n                </motion.div>\n              ) : step.num === currentStep ? (\n                <motion.div\n                  animate={{ scale: [1, 1.1, 1] }}\n                  transition={{ duration: 0.6, repeat: Infinity }}\n                  className=\"w-10 h-10 bg-brand-primary/20 rounded-full flex items-center justify-center border-2 border-brand-primary\"\n                >\n                  <div className=\"w-6 h-6 text-brand-primary text-lg\">{step.icon}</div>\n                </motion.div>\n              ) : (\n                <div className=\"w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center\">\n                  <Circle className=\"w-6 h-6 text-text-light\" />\n                </div>\n              )}\n            </div>\n            <div className=\"flex-1\">\n              <p className={`font-semibold ${\n                step.num <= currentStep ? 'text-text-primary' : 'text-text-light'\n              }`}>\n                {step.label}\n              </p>\n              {step.num === currentStep && (\n                <motion.div\n                  animate={{ width: ['0%', '100%'] }}\n                  transition={{ duration: 2, ease: 'linear', repeat: Infinity }}\n                  className=\"h-1 bg-gradient-to-r from-brand-primary to-brand-light rounded mt-1\"\n                />\n              )}\n            </div>\n          </motion.div>\n        ))}\n      </div>\n    </div>\n  );\n}\n
+import { motion } from 'framer-motion'; 
+import { CheckCircle, Circle } from 'lucide-react'; 
+
+export default function ProcessingSteps({ currentStep = 1 }) { 
+  const steps = [
+    { num: 1, label: 'Parsing PDF', icon: '📄' }, 
+    { num: 2, label: 'Extracting Claims', icon: '🔍' }, 
+    { num: 3, label: 'Web Search', icon: '🌐' }, 
+    { num: 4, label: 'Verification', icon: '⚖️' }, 
+    { num: 5, label: 'Report Generation', icon: '📊' }, 
+]; 
+
+  return (
+ < div className ="w-full max-w-2xl mx-auto">
+      <div className="space-y-3">
+        {steps.map((step, idx) => (
+          <motion.div
+            key={step.num}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: idx * 0.1 }}
+            className="flex items-center gap-4"
+          >
+            <div className="flex-shrink-0 relative">
+              {step.num < currentStep ? (
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center"
+                >
+                  <CheckCircle className="w-6 h-6 text-emerald-600" />
+                </motion.div>
+              ) : step.num === currentStep ? (
+                <motion.div
+                  animate={{ scale: [1, 1.1, 1] }}
+                  transition={{ duration: 0.6, repeat: Infinity }}
+                  className="w-10 h-10 bg-brand-primary/20 rounded-full flex items-center justify-center border-2 border-brand-primary"
+                >
+                  <div className="w-6 h-6 text-brand-primary text-lg">{step.icon}</div>
+                </motion.div>
+              ) : (
+                <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                  <Circle className="w-6 h-6 text-text-light" />
+                </div>
+              )}
+            </div>
+            <div className="flex-1">
+              <p className={`font-semibold ${
+                step.num <= currentStep ? 'text-text-primary' : 'text-text-light'
+              }`}>
+                {step.label}
+              </p>
+              {step.num === currentStep && (
+                <motion.div
+                  animate={{ width: ['0%', '100%'] }}
+                  transition={{ duration: 2, ease: 'linear', repeat: Infinity }}
+                  className="h-1 bg-gradient-to-r from-brand-primary to-brand-light rounded mt-1"
+                />
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}

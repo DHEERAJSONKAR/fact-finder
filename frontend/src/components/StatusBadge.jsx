@@ -3,30 +3,26 @@ import { CheckCircle, AlertCircle, XCircle, HelpCircle } from 'lucide-react';
 export default function StatusBadge({ status }) {
   const statusConfig = {
     Verified: {
-      bg: 'bg-emerald-100',
-      text: 'text-emerald-700',
-      border: 'border-emerald-300',
+      bg: 'bg-green-900/30',
+      text: 'text-green-400',
       icon: CheckCircle,
       label: '✅ Verified',
     },
     Inaccurate: {
-      bg: 'bg-amber-100',
-      text: 'text-amber-700',
-      border: 'border-amber-300',
+      bg: 'bg-amber-900/30',
+      text: 'text-amber-400',
       icon: AlertCircle,
       label: '⚠️ Inaccurate',
     },
     False: {
-      bg: 'bg-red-100',
-      text: 'text-red-700',
-      border: 'border-red-300',
+      bg: 'bg-red-900/30',
+      text: 'text-red-400',
       icon: XCircle,
       label: '❌ False',
     },
     Unverifiable: {
-      bg: 'bg-slate-200',
-      text: 'text-slate-700',
-      border: 'border-slate-300',
+      bg: 'bg-slate-700/30',
+      text: 'text-slate-400',
       icon: HelpCircle,
       label: '❓ Unverifiable',
     },
@@ -36,7 +32,7 @@ export default function StatusBadge({ status }) {
   const Icon = config.icon;
 
   return (
-    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium border ${config.bg} ${config.text} ${config.border}`}>
+    <span className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${config.bg} ${config.text}`}>
       <Icon size={16} />
       {config.label}
     </span>

@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
-import { ExternalLink, CheckCircle, AlertCircle, XCircle, HelpCircle, Star } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { ExternalLink, CheckCircle, AlertCircle, XCircle, HelpCircle } from 'lucide-react';
 import StatusBadge from './StatusBadge';
 
 export default function ClaimRow({
@@ -11,42 +10,6 @@ export default function ClaimRow({
   correct_fact,
   source,
 }) {
-  const [isStarred, setIsStarred] = useState(false);
-
-  // Check if claim is starred on mount
-  useEffect(() => {
-    const claimId = `${index}-${claim.substring(0, 20)}`;
-    const saved = localStorage.getItem('starredClaims');
-    if (saved) {
-      try {
-        const starred = JSON.parse(saved);
-        setIsStarred(starred.some((s) => s.id === claimId));
-      } catch (e) {
-        console.error('Failed to load starred claims:', e);
-      }
-    }
-  }, []);
-
-  const toggleStar = () => {
-    const claimId = `${index}-${claim.substring(0, 20)}`;
-    const saved = localStorage.getItem('starredClaims');
-    let starred = saved ? JSON.parse(saved) : [];
-
-    if (isStarred) {
-      starred = starred.filter((s) => s.id !== claimId);
-    } else {
-      starred.push({
-        id: claimId,
-        claim: { claim, status, explanation, correct_fact, source },
-        timestamp: new Date().toISOString(),
-        index,
-      });
-    }
-
-    localStorage.setItem('starredClaims', JSON.stringify(starred));
-    setIsStarred(!isStarred);
-  };
-
   const cardVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: {
@@ -59,58 +22,40 @@ export default function ClaimRow({
   const getStatusColor = () => {
     switch (status) {
       case 'Verified':
-        return 'from-emerald-50/80 to-teal-50/60 border-emerald-200 hover:border-emerald-300 shadow-sm hover:shadow-md';
+        return 'from-emerald-600/20 to-emerald-700/5 border-emerald-500/30 hover:border-emerald-500/50';
       case 'Inaccurate':
-        return 'from-amber-50/80 to-orange-50/60 border-amber-200 hover:border-amber-300 shadow-sm hover:shadow-md';
-      case 'False': flex - 1">
-        < motion.div
-        animate = {{ scale: [1, 1.05, 1] }
+        return 'from-orange-600/20 to-orange-700/5 border-orange-500/30 hover:border-orange-500/50';
+      case 'False':
+        return 'from-rose-600/20 to-rose-700/5 border-rose-500/30 hover:border-rose-500/50';
+      default:
+        return 'from-slate-600/20 to-slate-700/5 border-slate-500/30 hover:border-slate-500/50';
     }
-    transition = {{ duration: 2, repeat: Infinity, delay: index * 0.1 }
-  }
-  className = "flex-shrink-0 w-10 h-10 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-center"
+  };
+
+  const getStatusIcon = () => {
+    switch (status) {
+      case 'Verified':
+        return <CheckCircle className="w-5 h-5 text-emerald-400" />;
+      case 'Inaccurate':
+        return <AlertCircle className="w-5 h-5 text-orange-400" />;
+      case 'False':
+        return <XCircle className="w-5 h-5 text-rose-400" />;
+      default:
+        return <HelpCircle className="w-5 h-5 text-slate-400" />;
+    }
+  };
+
+  return (
+    <motion.div
+      variants={cardVariants}
+      className={`group relative overflow-hidden rounded-xl border bg-gradient-to-br ${getStatusColor()} backdrop-blur-sm hover:shadow-lg transition-all duration-300`}
     >
-    <span className="text-sm font-bold text-text-secondary">#{index + 1}</span>
-            </motion.div >
-
-    <div className="flex-1 min-w-0">
-      <p className="text-xs text-text-light font-semibold uppercase tracking-wider mb-1">
-        Claim
-      </p>
-      <p className="text-base font-semibold text-text-primary line-clamp-2 hover:line-clamp-none cursor-default" title={claim}>
-        {claim}
-      </p>
-    </div>
-          </div >
-
-    <div className="flex items-center gap-2 flex-shrink-0">
-      <motion.button
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={toggleStar}
-        className={`p-2 rounded-lg transition-all duration-300 ${isStarred
-            ? 'bg-amber-100 text-amber-600'
-            : 'bg-blue-50 text-text-light hover:bg-blue-100'
-          }`}
-        title={isStarred ? 'Remove bookmark' : 'Bookmark claim'}
-      >
-        <Star size={18} fill={isStarred ? 'currentColor' : 'none'} />
-      </motion.button>
-
-      <motion.div
-        animate={{ rotate: [0, 5, -5, 0] }}
-        transition={{ duration: 3, repeat: Infinity, delay: index * 0.2 }}
-        className="flex-shrink-0"
-      >
-        {getStatusIcon()}
-      </motion.div>
-    </accent line at top */
-}
+      {/* Gradient accent line at top */}
       <div className={`absolute top-0 left-0 right-0 h-1 ${
-        status === 'Verified' ? 'bg-gradient-to-r from-emerald-500 to-teal-500' :
-        status === 'Inaccurate' ? 'bg-gradient-to-r from-amber-500 to-orange-500' :
-        status === 'False' ? 'bg-gradient-to-r from-red-500 to-rose-500' :
-        'bg-gradient-to-r from-slate-400 to-gray-400'
+        status === 'Verified' ? 'bg-gradient-to-r from-emerald-500 to-emerald-600' :
+        status === 'Inaccurate' ? 'bg-gradient-to-r from-orange-500 to-orange-600' :
+        status === 'False' ? 'bg-gradient-to-r from-rose-500 to-rose-600' :
+        'bg-gradient-to-r from-slate-500 to-slate-600'
       }`}></div>
 
       <div className="relative p-6">
@@ -120,16 +65,16 @@ export default function ClaimRow({
             <motion.div
               animate={{ scale: [1, 1.05, 1] }}
               transition={{ duration: 2, repeat: Infinity, delay: index * 0.1 }}
-              className="flex-shrink-0 w-10 h-10 bg-blue-50 rounded-lg border border-blue-200 flex items-center justify-center"
+              className="flex-shrink-0 w-10 h-10 bg-white/5 rounded-lg border border-white/10 flex items-center justify-center"
             >
-              <span className="text-sm font-bold text-text-secondary">#{index + 1}</span>
+              <span className="text-sm font-bold text-slate-400">#{index + 1}</span>
             </motion.div>
             
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-text-light font-semibold uppercase tracking-wider mb-1">
+              <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-1">
                 Claim
               </p>
-              <p className="text-base font-semibold text-text-primary line-clamp-2 hover:line-clamp-none cursor-default" title={claim}>
+              <p className="text-base font-semibold text-white line-clamp-2 hover:line-clamp-none cursor-default" title={claim}>
                 {claim}
               </p>
             </div>
@@ -150,22 +95,22 @@ export default function ClaimRow({
         </div>
 
         {/* Explanation section */}
-        <div className="mb-4 pb-4 border-b border-gray-200">
-          <p className="text-xs text-text-light font-semibold uppercase tracking-wider mb-2">
+        <div className="mb-4 pb-4 border-b border-white/5">
+          <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">
             Analysis
           </p>
-          <p className="text-sm text-text-primary leading-relaxed">
+          <p className="text-sm text-slate-200 leading-relaxed">
             {explanation}
           </p>
         </div>
 
         {/* Correct fact section (if available) */}
         {correct_fact && correct_fact.trim() && (
-          <div className="mb-4 pb-4 border-b border-gray-200 bg-blue-50 rounded-lg p-3">
-            <p className="text-xs text-text-light font-semibold uppercase tracking-wider mb-2">
+          <div className="mb-4 pb-4 border-b border-white/5 bg-white/5 rounded-lg p-3">
+            <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">
               Correct Information
             </p>
-            <p className="text-sm text-text-primary italic">
+            <p className="text-sm text-slate-200 italic">
               {correct_fact}
             </p>
           </div>
@@ -174,12 +119,12 @@ export default function ClaimRow({
         {/* Source Link */}
         {source && source.trim() && (
           <div className="flex items-center justify-between">
-            <span className="text-xs text-text-light">Source Reference</span>
+            <span className="text-xs text-slate-500">Source Reference</span>
             <a
               href={source}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/30 hover:border-brand-primary/50 text-brand-primary hover:text-brand-dark transition-all duration-300 text-xs font-semibold group/link"
+              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/30 hover:border-brand-primary/50 text-brand-primary hover:text-brand-hover transition-all duration-300 text-xs font-semibold group/link"
             >
               <span>View Source</span>
               <ExternalLink size={14} className="group-hover/link:translate-x-1 group-hover/link:translate-y-1 transition-transform" />
@@ -188,11 +133,11 @@ export default function ClaimRow({
         )}
 
         {!source || !source.trim() && (
-          <div className="text-xs text-text-light">
+          <div className="text-xs text-slate-600">
             No source available
           </div>
         )}
       </div>
-    </motion.div >
+    </motion.div>
   );
 }

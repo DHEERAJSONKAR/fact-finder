@@ -18,7 +18,8 @@ export default function ExportMenu({ report, filename }) {
     };
 
     const exportAsCSV = () => {
-        let csv = 'Claim,Status,Explanation,Correct Fact,Source\n';
+        let csv = 'Claim,Status,Explanation,Correct Fact,Source
+';
         report.claims.forEach(claim => {
             const row = [
                 `"${claim.claim.replace(/"/g, '""')}"`,
@@ -27,7 +28,8 @@ export default function ExportMenu({ report, filename }) {
                 `"${(claim.correct_fact || '').replace(/"/g, '""')}"`,
                 claim.source || '',
             ].join(',');
-            csv += row + '\n';
+            csv += row + '
+';
         });
         const dataBlob = new Blob([csv], { type: 'text/csv' });
         const url = URL.createObjectURL(dataBlob);

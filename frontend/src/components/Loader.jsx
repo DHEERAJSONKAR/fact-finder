@@ -35,7 +35,7 @@ export default function Loader() {
         <motion.div
           animate={{ rotate: -360 }}
           transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-          className="absolute inset-2 border-4 border-transparent border-b-brand-dark rounded-full opacity-60"
+          className="absolute inset-2 border-4 border-transparent border-b-brand-hover rounded-full opacity-60"
         />
       </div>
 
@@ -48,7 +48,7 @@ export default function Loader() {
         transition={{ duration: 0.3 }}
         className="text-center"
       >
-        <p className="text-lg text-text-primary font-medium">
+        <p className="text-lg text-slate-200 font-medium">
           {messages[currentMessageIndex]}
         </p>
       </motion.div>
@@ -61,7 +61,7 @@ export default function Loader() {
             animate={{
               scale: idx === currentMessageIndex ? 1.2 : 1,
               backgroundColor:
-                idx === currentMessageIndex ? '#0EA5E9' : '#CBD5E1',
+                idx === currentMessageIndex ? '#6366F1' : '#475569',
             }}
             transition={{ duration: 0.3 }}
             className="w-2 h-2 rounded-full"
