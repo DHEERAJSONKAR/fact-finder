@@ -1,55 +1,27 @@
-const pdfParseModule = require('pdf-parse');
-// Handle both default export and direct function export
-const pdfParse = pdfParseModule.default || pdfParseModule;
+const { PDFParse } = require('pdf-parse');
 
-// Configure pdf-parse with options for better compatibility
-const pdfOptions = {
-  pagerender: renderPage,
-  max: 0, // 0 = all pages
-  version: 'v2', // Use the latest version available
+// Configure pdf-parse v2 text extraction options.
+const parseOptions = {
+  lineEnforce: true,
+  pageJoiner: '\n',
 };
-
-// Custom page renderer for better error resilience
-function renderPage(pageData) {
-  return Promise.resolve()
-    .then(() => {
-      let render_options = {
-        normalizeWhitespace: true,
-        disableCombineTextItems: false,
-      };
-      return pageData.getTextContent(render_options)
-        .then(textContent => {
-          let lastY, text = '';
-          for (let item of textContent.items) {
-            if (lastY == item.y || !lastY) {
-              text += item.str;
-            } else {
-              text += '\n' + item.str;
-            }
-            lastY = item.y;
-          }
-          return text;
-        });
-    })
-    .catch(err => {
-      console.warn('[pdfExtractor] Error rendering page:', err.message);
-      // Continue with partial extraction on render error
-      return '';
-    });
-}
 
 async function pdfExtractor(buffer) {
   if (!buffer || buffer.length === 0) {
     throw new Error('PDF buffer is empty');
   }
 
+  let parser;
+  let timeoutId;
+
   try {
     console.log('[pdfExtractor] Starting PDF parsing with buffer size:', buffer.length);
+    parser = new PDFParse({ data: buffer });
 
     // Add timeout to prevent hanging
-    const parsePromise = pdfParse(buffer, pdfOptions);
+    const parsePromise = parser.getText(parseOptions);
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('PDF parsing timeout (30s)')), 30000)
+      timeoutId = setTimeout(() => reject(new Error('PDF parsing timeout (30s)')), 30000)
     );
 
     const data = await Promise.race([parsePromise, timeoutPromise]);
@@ -89,6 +61,13 @@ async function pdfExtractor(buffer) {
       throw new Error(
         `Failed to extract text from PDF: ${errorMessage}`
       );
+    }
+  } finally {
+    clearTimeout(timeoutId);
+    if (parser) {
+      await parser.destroy().catch(err => {
+        console.warn('[pdfExtractor] Error cleaning up PDF parser:', err.message);
+      });
     }
   }
 }

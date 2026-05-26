@@ -6,7 +6,48 @@ import UploadZone from './components/UploadZone';
 import Loader from './components/Loader';
 import SummaryCards from './components/SummaryCards';
 import ResultsTable from './components/ResultsTable';
+import PDFPreview from './components/PDFPreview';
 import { AlertCircle, RotateCcw } from 'lucide-react';
+
+function asText(value, fallback = '') {
+  if (value == null) return fallback;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  try {
+    return JSON.stringify(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function asNumber(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function normalizeReport(data) {
+  const claims = Array.isArray(data?.claims) ? data.claims : [];
+
+  return {
+    filename: asText(data?.filename, 'Uploaded PDF'),
+    total_claims: asNumber(data?.total_claims ?? claims.length),
+    verified: asNumber(data?.verified),
+    inaccurate: asNumber(data?.inaccurate),
+    false_count: asNumber(data?.false_count),
+    unverifiable: asNumber(data?.unverifiable),
+    accuracy_score: asNumber(data?.accuracy_score),
+    extracted_text: asText(data?.extracted_text),
+    processed_at: asText(data?.processed_at, new Date().toISOString()),
+    message: asText(data?.message),
+    claims: claims.map((claim) => ({
+      claim: asText(claim?.claim),
+      status: asText(claim?.status, 'Unverifiable'),
+      explanation: asText(claim?.explanation, 'Unable to verify this claim.'),
+      correct_fact: asText(claim?.correct_fact),
+      source: asText(claim?.source),
+    })),
+  };
+}
 
 export default function App() {
   const [file, setFile] = useState(null);
@@ -63,7 +104,7 @@ export default function App() {
         throw new Error('No data received from server');
       }
 
-      setReport(response.data);
+      setReport(normalizeReport(response.data));
       setStatus('done');
     } catch (err) {
       console.error('[App] Analysis error:', err);
@@ -143,7 +184,14 @@ export default function App() {
                 processed_at={report.processed_at}
               />
 
-              {report.total_claims > 0 && (
+              {report.extracted_text && (
+                <PDFPreview
+                  filename={report.filename}
+                  extractedText={report.extracted_text}
+                />
+              )}
+
+              {report.total_claims > 0 && !report.claims?.every(c => c.status === 'Unverifiable' || c.status === 'Error') && (
                 <ResultsTable claims={report.claims} />
               )}
 

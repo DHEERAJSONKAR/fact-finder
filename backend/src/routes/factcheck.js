@@ -12,6 +12,22 @@ const VERIFICATION_MODE = process.env.VERIFICATION_MODE || 'demo';
 const MAX_CLAIMS_PER_PDF = parseInt(process.env.MAX_CLAIMS_PER_PDF || '8'); // Reduced from 10 for speed
 const RATE_LIMIT_DELAY = parseInt(process.env.RATE_LIMIT_DELAY || '0'); // Reduced from 300 - using parallel now
 
+function stringifyField(value) {
+  if (value == null) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return JSON.stringify(value);
+}
+
+function normalizeVerificationResult(result = {}) {
+  return {
+    status: stringifyField(result.status) || 'Unverifiable',
+    explanation: stringifyField(result.explanation) || 'Unable to verify this claim.',
+    correct_fact: stringifyField(result.correct_fact),
+    source: stringifyField(result.source),
+  };
+}
+
 // Configure multer for memory storage
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -77,6 +93,9 @@ router.post('/factcheck', upload.single('file'), async (req, res) => {
         verified: 0,
         inaccurate: 0,
         false_count: 0,
+        unverifiable: 0,
+        accuracy_score: 0,
+        extracted_text: text.substring(0, 2000),
         processed_at: new Date().toISOString(),
         claims: [],
         message: 'No specific factual claims found in this document. Try a document with statistics, dates, or concrete facts.',
@@ -112,7 +131,7 @@ router.post('/factcheck', upload.single('file'), async (req, res) => {
         
         return {
           claim,
-          ...verification,
+          ...normalizeVerificationResult(verification),
         };
       } catch (error) {
         console.error(`[factcheck] Error verifying claim "${claim.substring(0, 50)}...":`, error.message);

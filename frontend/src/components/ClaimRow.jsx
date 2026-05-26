@@ -18,6 +18,8 @@ export default function ClaimRow({
       transition: { type: "spring", stiffness: 100, damping: 15 },
     },
   };
+  const sourceText = typeof source === 'string' ? source : '';
+  const correctFactText = typeof correct_fact === 'string' ? correct_fact : '';
 
   const getStatusColor = () => {
     switch (status) {
@@ -105,23 +107,23 @@ export default function ClaimRow({
         </div>
 
         {/* Correct fact section (if available) */}
-        {correct_fact && correct_fact.trim() && (
+        {correctFactText.trim() && (
           <div className="mb-4 pb-4 border-b border-white/5 bg-white/5 rounded-lg p-3">
             <p className="text-xs text-slate-400 font-semibold uppercase tracking-wider mb-2">
               Correct Information
             </p>
             <p className="text-sm text-slate-200 italic">
-              {correct_fact}
+              {correctFactText}
             </p>
           </div>
         )}
 
         {/* Source Link */}
-        {source && source.trim() && (
+        {sourceText.trim() ? (
           <div className="flex items-center justify-between">
             <span className="text-xs text-slate-500">Source Reference</span>
             <a
-              href={source}
+              href={sourceText}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/30 hover:border-brand-primary/50 text-brand-primary hover:text-brand-hover transition-all duration-300 text-xs font-semibold group/link"
@@ -130,9 +132,7 @@ export default function ClaimRow({
               <ExternalLink size={14} className="group-hover/link:translate-x-1 group-hover/link:translate-y-1 transition-transform" />
             </a>
           </div>
-        )}
-
-        {!source || !source.trim() && (
+        ) : (
           <div className="text-xs text-slate-600">
             No source available
           </div>
