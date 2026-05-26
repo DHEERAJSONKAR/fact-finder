@@ -35,30 +35,27 @@ export default function UploadZone({ onFileSelect, onAnalyze, isAnalyzing }) {
       {!selectedFile ? (
         <div
           {...getRootProps()}
-          className={`group relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-300 ${
-            isDragActive
+          className={`group relative cursor-pointer overflow-hidden rounded-2xl transition-all duration-300 ${isDragActive
               ? 'ring-2 ring-brand-primary scale-105'
               : 'hover:scale-102'
-          }`}
+            }`}
         >
           {/* Gradient background */}
-          <div className={`absolute inset-0 bg-gradient-to-br transition-all duration-300 ${
-            isDragActive
-              ? 'from-brand-primary/20 via-brand-primary/5 to-transparent'
-              : 'from-slate-800/50 via-slate-900/50 to-slate-900'
-          }`}></div>
-          
+          <div className={`absolute inset-0 bg-gradient-to-br transition-all duration-300 ${isDragActive
+              ? 'from-blue-100/40 via-cyan-50/40 to-transparent'
+              : 'from-white via-blue-50/30 to-white'
+            }`}></div>
+
           {/* Border */}
-          <div className={`absolute inset-0 rounded-2xl border-2 transition-all duration-300 ${
-            isDragActive
-              ? 'border-brand-primary shadow-lg shadow-brand-primary/50'
-              : 'border-dashed border-slate-600 group-hover:border-slate-500'
-          }`}></div>
-          
+          <div className={`absolute inset-0 rounded-2xl border-2 transition-all duration-300 ${isDragActive
+              ? 'border-brand-primary shadow-lg shadow-brand-primary/30'
+              : 'border-dashed border-blue-200 group-hover:border-brand-primary/50'
+            }`}></div>
+
           {/* Content */}
           <div className="relative p-8 sm:p-10 text-center">
             <input {...getInputProps()} />
-            
+
             <motion.div
               animate={{ y: isDragActive ? -10 : 0, scale: isDragActive ? 1.1 : 1 }}
               transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
@@ -70,25 +67,23 @@ export default function UploadZone({ onFileSelect, onAnalyze, isAnalyzing }) {
                 className="inline-block"
               >
                 <div className="relative">
-                  <div className={`absolute inset-0 bg-gradient-to-r from-brand-primary to-brand-hover rounded-2xl blur-lg opacity-0 group-hover:opacity-50 transition-opacity duration-300 ${
-                    isDragActive ? 'opacity-75' : ''
-                  }`}></div>
-                  <div className="relative bg-gradient-to-br from-brand-primary/20 to-brand-primary/10 p-4 rounded-2xl">
-                    <Upload className={`w-16 h-16 transition-all duration-300 ${
-                      isDragActive ? 'text-brand-primary scale-125' : 'text-brand-primary/70 group-hover:text-brand-primary group-hover:scale-110'
-                    }`} />
+                  <div className={`absolute inset-0 bg-gradient-to-r from-brand-primary to-brand-light rounded-2xl blur-lg opacity-0 group-hover:opacity-40 transition-opacity duration-300 ${isDragActive ? 'opacity-50' : ''
+                    }`}></div>
+                  <div className="relative bg-gradient-to-br from-brand-primary/20 to-brand-light/20 p-4 rounded-2xl border border-brand-primary/30">
+                    <Upload className={`w-16 h-16 transition-all duration-300 ${isDragActive ? 'text-brand-primary scale-125' : 'text-brand-primary/60 group-hover:text-brand-primary group-hover:scale-110'
+                      }`} />
                   </div>
                 </div>
               </motion.div>
             </motion.div>
-            
-            <h3 className="text-3xl font-bold text-white mb-3 group-hover:text-brand-primary transition-colors duration-300">
+
+            <h3 className="text-3xl font-bold text-text-primary mb-3 group-hover:text-brand-primary transition-colors duration-300">
               {isDragActive ? 'Drop your PDF here' : 'Upload Your Document'}
             </h3>
-            <p className="text-slate-400 text-lg mb-2">
+            <p className="text-text-secondary text-lg mb-2">
               Drag and drop a PDF file, or click to browse
             </p>
-            <p className="text-slate-500 text-sm font-medium">
+            <p className="text-text-light text-sm font-medium">
               Maximum file size: 10 MB • Supports PDF format
             </p>
           </div>
@@ -98,15 +93,15 @@ export default function UploadZone({ onFileSelect, onAnalyze, isAnalyzing }) {
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 0.4, type: "spring" }}
-          className="group relative overflow-hidden rounded-2xl"
+          className="group relative overflow-hidden rounded-2xl border border-blue-100 shadow-lg"
         >
           {/* Gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-800/80 via-slate-900/80 to-slate-900"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-          
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-brand-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
           {/* Border */}
-          <div className="absolute inset-0 rounded-2xl border border-slate-700 group-hover:border-brand-primary/50 transition-colors duration-300"></div>
-          
+          <div className="absolute inset-0 rounded-2xl border border-blue-100 group-hover:border-brand-primary/50 transition-colors duration-300"></div>
+
           {/* Content */}
           <div className="relative p-8">
             {/* File info */}
@@ -117,15 +112,15 @@ export default function UploadZone({ onFileSelect, onAnalyze, isAnalyzing }) {
                   transition={{ duration: 2, repeat: Infinity }}
                   className="relative"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand-primary to-brand-hover rounded-lg blur opacity-50"></div>
-                  <div className="relative bg-gradient-to-br from-brand-primary to-brand-hover p-3 rounded-lg">
-                    <File className="w-6 h-6 text-white" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand-primary to-brand-light rounded-lg blur opacity-30"></div>
+                  <div className="relative bg-gradient-to-br from-brand-primary/20 to-brand-light/20 p-3 rounded-lg border border-brand-primary/40">
+                    <File className="w-6 h-6 text-brand-primary" />
                   </div>
                 </motion.div>
-                
+
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-2">
-                    <p className="text-xl font-bold text-white truncate">
+                    <p className="text-xl font-bold text-text-primary truncate">
                       {selectedFile.name}
                     </p>
                     <motion.div
@@ -133,12 +128,12 @@ export default function UploadZone({ onFileSelect, onAnalyze, isAnalyzing }) {
                       transition={{ duration: 0.5 }}
                       className="flex-shrink-0"
                     >
-                      <div className="bg-green-500/20 border border-green-500/50 rounded-full p-1.5">
-                        <Check className="w-4 h-4 text-green-400" />
+                      <div className="bg-emerald-100 border border-emerald-400 rounded-full p-1.5">
+                        <Check className="w-4 h-4 text-emerald-600" />
                       </div>
                     </motion.div>
                   </div>
-                  <p className="text-slate-400 text-sm font-medium">
+                  <p className="text-text-secondary text-sm font-medium">
                     {fileSize} MB • Ready to analyze
                   </p>
                 </div>
@@ -154,8 +149,8 @@ export default function UploadZone({ onFileSelect, onAnalyze, isAnalyzing }) {
                 disabled={isAnalyzing}
                 className="w-full relative group/btn overflow-hidden py-4 px-6 rounded-lg font-bold text-lg text-white transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-primary to-brand-hover"></div>
-                <div className="absolute inset-0 bg-gradient-to-r from-brand-hover to-brand-primary opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-primary to-brand-dark"></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-brand-dark to-brand-primary opacity-0 group-hover/btn:opacity-100 transition-opacity duration-300"></div>
                 <div className="relative flex items-center justify-center gap-2">
                   {isAnalyzing ? (
                     <>
@@ -178,7 +173,7 @@ export default function UploadZone({ onFileSelect, onAnalyze, isAnalyzing }) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setSelectedFile(null)}
-                className="w-full py-3 px-6 rounded-lg font-semibold text-slate-300 border border-slate-600 hover:border-slate-500 hover:bg-slate-800/50 hover:text-white transition-all duration-300 flex items-center justify-center gap-2"
+                className="w-full py-3 px-6 rounded-lg font-semibold text-text-secondary border border-blue-200 hover:border-brand-primary/50 hover:bg-blue-50 hover:text-brand-primary transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <X className="w-5 h-5" />
                 Choose Different File

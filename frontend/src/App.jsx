@@ -5,8 +5,13 @@ import Header from './components/Header';
 import UploadZone from './components/UploadZone';
 import Loader from './components/Loader';
 import DashboardStats from './components/DashboardStats';
+import KeyInsights from './components/KeyInsights';
 import PDFPreview from './components/PDFPreview';
 import ResultsTable from './components/ResultsTable';
+import ExportMenu from './components/ExportMenu';
+import ThemeToggle from './components/ThemeToggle';
+import ProcessingSteps from './components/ProcessingSteps';
+import StarredClaims from './components/StarredClaims';
 import { AlertCircle, RotateCcw, Shield, Heart, ExternalLink } from 'lucide-react';
 
 export default function App() {
@@ -14,6 +19,7 @@ export default function App() {
   const [status, setStatus] = useState('idle'); // idle | processing | done | error
   const [report, setReport] = useState(null);
   const [error, setError] = useState(null);
+  const [processingStep, setProcessingStep] = useState(1);
 
   const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
@@ -46,17 +52,25 @@ export default function App() {
     if (!file) return;
 
     setStatus('processing');
-    setError(null);
+    setProcessingStep(1);
 
     try {
       const formData = new FormData();
       formData.append('file', file);
 
       console.log('[App] Starting analysis for:', file.name);
+      
+      // Simulate step progression
+      const stepInterval = setInterval(() => {
+        setProcessingStep((prev) => (prev < 5 ? prev + 1 : 5));
+      }, 2000);
+
       const response = await axios.post(`${API_URL}/api/factcheck`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
         timeout: 180000, // 3 minute timeout
       });
+
+      clearInterval(stepInterval);      });
 
       console.log('[App] Analysis response:', response.data);
 
@@ -88,10 +102,16 @@ export default function App() {
 
       setError(errorMessage);
       setStatus('error');
+    setProcessingStep(1);
     }
   };
 
-  const handleReset = () => {
+  const handleRe
+      
+      {/* Theme Toggle - positioned in top right */}
+      <div className="fixed top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>set = () => {
     setFile(null);
     setStatus('idle');
     setReport(null);
@@ -112,9 +132,10 @@ export default function App() {
               exit={{ opacity: 0 }}
               className="flex flex-col items-center justify-center py-8 sm:py-12"
             >
-              <UploadZone
-                onFileSelect={handleFileSelect}
-                onAnalyze={handleAnalyze}
+              <UploadZone gap-12"
+            >
+              <Loader />
+              <ProcessingSteps currentStep={processingStep}lyze={handleAnalyze}
                 isAnalyzing={false}
               />
             </motion.div>
@@ -162,13 +183,29 @@ export default function App() {
                 />
               )}
 
-              {/* Detailed Results Table */}
+              {/* Key Insights - Analytics overview */}
               {report.total_claims > 0 && (
-                <ResultsTable claims={report.claims} />
+                <KeyInsights
+                  claims={report.claims}
+                  accuracy_score={report.accuracy_score || 0}
+                />
               )}
 
-              {/* No claims found message */}
-              {report.total_claims === 0 && report.message && (
+              {/* Detailed Results Table */}
+              {report.total_claims > 0 && (
+                <div className="space-y-4">
+                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-bold text-text-primary">All Claims</h3>
+                    </div>
+                    <StarredClaims claims={report.claims} />
+                  </div>
+                  <ResultsTable claims={report.claims} />
+                </div>
+              )}blue-50 to-cyan-50 border border-blue-100 rounded-xl p-8 text-center shadow-sm"
+                >
+                  <p className="text-text-primary text-lg mb-2">📋 {report.message}</p>
+                  <p className="text-text-secondaryport.message && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -178,27 +215,33 @@ export default function App() {
                   <p className="text-slate-500 text-sm">Try a document with more factual claims like statistics, dates, or specific assertions.</p>
                 </motion.div>
               )}
-
-              {/* API Rate Limit Warning */}
-              {report.total_claims > 0 && report.claims?.every(c => c.status === 'Unverifiable' || c.status === 'Error') && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-gradient-to-br from-yellow-900/30 to-yellow-900/10 border border-yellow-700 rounded-xl p-6"
+amber-50 to-orange-50 border border-amber-200 rounded-xl p-6 shadow-sm"
+                >
+                  <h3 className="text-amber-800 font-bold mb-3 text-lg">⚠️ Verification Temporarily Unavailable</h3>
+                  <p className="text-amber-700 text-sm mb-4">
+                    {report.total_claims} claims were extracted but verification failed, likely due to API rate limits.
+                  </p>
+                  <p className="text-amber-7r from-yellow-900/30 to-yellow-900/10 border border-yellow-700 rounded-xl p-6"
                 >
                   <h3 className="text-yellow-400 font-bold mb-3 text-lg">⚠️ Verification Temporarily Unavailable</h3>
                   <p className="text-yellow-300 text-sm mb-4">
                     {report.total_claims} claims were extracted but verification failed, likely due to API rate limits.
                   </p>
                   <p className="text-yellow-300/70 text-xs mb-4">
-                    💡 Solutions: Try again in a few minutes, or upgrade your API plan for unlimited verification.
-                  </p>
-                  <ResultsTable claims={report.claims} />
-                </motion.div>
-              )}
-
-              {/* Action Buttons */}
-              <div className="flex gap-4">
+                    💡 Solutions: Tflex-col sm:flex-row gap-4 pt-8">
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleReset}
+                  className="flex-1 bg-gradient-to-r from-brand-primary to-brand-dark text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/30 transition-all duration-300 flex items-center justify-center gap-2"
+                >
+                  <RotateCcw size={20} />
+                  Analyze Another Document
+                </motion.button>
+                
+                {report && (
+                  <ExportMenu report={report} filename={report.filename} />
+                )}ame="flex gap-4">
                 <button
                   onClick={handleReset}
                   className="flex-1 bg-gradient-to-r from-brand-primary to-brand-hover text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/25 transition-all duration-300 flex items-center justify-center gap-2"
@@ -206,30 +249,18 @@ export default function App() {
                   <RotateCcw size={20} />
                   Analyze Another Document
                 </button>
-              </div>
-            </motion.div>
-          )}
-
-          {status === 'error' && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="flex flex-col items-center justify-center py-12 gap-6"
-            >
-              <div className="w-full max-w-2xl bg-red-900/20 border border-red-700 rounded-lg p-6">
+              </div>100 border border-red-300 rounded-lg p-6 shadow-sm">
                 <div className="flex items-start gap-4">
-                  <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0 mt-1" />
+                  <AlertCircle className="w-6 h-6 text-red-600 flex-shrink-0 mt-1" />
                   <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-red-400 mb-2">
+                    <h3 className="text-lg font-semibold text-red-800 mb-2">
                       Analysis Failed
                     </h3>
-                    <p className="text-red-300 text-sm mb-3 whitespace-pre-wrap">{error}</p>
-                    <div className="text-xs text-red-400/70 space-y-1 bg-red-950/30 p-3 rounded mt-3">
+                    <p className="text-red-700 text-sm mb-3 whitespace-pre-wrap">{error}</p>
+                    <div className="text-xs text-red-700 space-y-1 bg-red-50 p-3 rounded mt-3">
                       <p>💡 <strong>Quick tips:</strong></p>
                       <ul className="list-disc list-inside space-y-1 mt-2">
-                        <li>Backend running? → <code className="bg-red-950 px-1 rounded">npm run dev</code> in backend/</li>
+                        <li>Backend running? → <code className="bg-red-100 px-1 rounded">npm run dev</code> in backend/</li>
                         <li>API keys set? → Check backend/.env (GROQ_API_KEY, TAVILY_API_KEY)</li>
                         <li>Text-based PDF? → Not a scanned image</li>
                         <li>Has facts? → PDFs with stats, dates, figures work best</li>
@@ -240,6 +271,18 @@ export default function App() {
               </div>
 
               <div className="flex gap-4 w-full max-w-2xl">
+                <button
+                  onClick={handleReset}
+                  className="flex-1 bg-gradient-to-r from-brand-primary to-brand-dark text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/30 transition-all duration-300"
+                >
+                  Try Again
+                </button>
+                <button
+                  onClick={() => {
+                    setFile(null);
+                    setStatus('idle');
+                  }}
+                  className="flex-1 border border-blue-200 text-text-secondary font-medium py-3 rounded-lg hover:bg-blue-5
                 <button
                   onClick={handleReset}
                   className="flex-1 bg-gradient-to-r from-brand-primary to-brand-hover text-white font-semibold py-3 rounded-lg hover:shadow-lg hover:shadow-brand-primary/25 transition-all duration-300"
