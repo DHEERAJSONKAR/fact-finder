@@ -3,11 +3,11 @@ import { CheckCircle, Circle } from 'lucide-react';
 
 export default function ProcessingSteps({ currentStep = 1 }) { 
   const steps = [
-    { num: 1, label: 'Parsing PDF', icon: '📄' }, 
-    { num: 2, label: 'Extracting Claims', icon: '🔍' }, 
-    { num: 3, label: 'Web Search', icon: '🌐' }, 
-    { num: 4, label: 'Verification', icon: '⚖️' }, 
-    { num: 5, label: 'Report Generation', icon: '📊' }, 
+    { num: 1, label: 'Parsing PDF' }, 
+    { num: 2, label: 'Extracting Claims' }, 
+    { num: 3, label: 'Web Search' }, 
+    { num: 4, label: 'Verification' }, 
+    { num: 5, label: 'Report Generation' }, 
 ]; 
 
   return (
@@ -36,7 +36,7 @@ export default function ProcessingSteps({ currentStep = 1 }) {
                   transition={{ duration: 0.6, repeat: Infinity }}
                   className="w-10 h-10 bg-brand-primary/20 rounded-full flex items-center justify-center border-2 border-brand-primary"
                 >
-                  <div className="w-6 h-6 text-brand-primary text-lg">{step.icon}</div>
+                  <span className="text-sm font-bold text-brand-primary">{step.num}</span>
                 </motion.div>
               ) : (
                 <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">

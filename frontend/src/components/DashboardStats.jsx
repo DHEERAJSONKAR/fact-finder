@@ -190,28 +190,28 @@ export default function DashboardStats({
         variants={itemVariants}
         className="bg-gradient-to-br from-white to-blue-50 border border-blue-100 rounded-xl p-6 shadow-sm"
       >
-        <h3 className="text-xl font-bold text-text-primary mb-4">📊 Summary</h3>
+        <h3 className="text-xl font-bold text-text-primary mb-4">Summary</h3>
         <div className="space-y-3 text-text-secondary">
           <p className="leading-relaxed">
             Out of <span className="text-text-primary font-semibold">{total_claims}</span> claims analyzed:
           </p>
           <ul className="space-y-2 ml-4">
             <li className="flex items-start gap-2">
-              <span className="text-emerald-600 font-bold mt-0.5">✓</span>
+              <span className="text-emerald-600 font-bold mt-0.5">OK</span>
               <span>
                 <span className="text-text-primary font-semibold">{verified}</span> claim{verified !== 1 ? 's' : ''} were{' '}
                 <span className="text-emerald-600 font-semibold">verified</span> with supporting evidence
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-amber-600 font-bold mt-0.5">⚠</span>
+              <span className="text-amber-600 font-bold mt-0.5">!</span>
               <span>
                 <span className="text-text-primary font-semibold">{inaccurate}</span> claim{inaccurate !== 1 ? 's' : ''} were marked as{' '}
                 <span className="text-amber-600 font-semibold">inaccurate</span> or partially misleading
               </span>
             </li>
             <li className="flex items-start gap-2">
-              <span className="text-red-600 font-bold mt-0.5">✕</span>
+              <span className="text-red-600 font-bold mt-0.5">No</span>
               <span>
                 <span className="text-text-primary font-semibold">{false_count}</span> claim{false_count !== 1 ? 's' : ''} were determined to be{' '}
                 <span className="text-red-600 font-semibold">false</span>

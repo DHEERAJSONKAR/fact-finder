@@ -26,11 +26,11 @@ export default {
           unverifiable: '#6B7280',
         },
         bg: {
-          base: '#F8FAFC',
+          base: '#020617',
         },
         text: {
-          primary: '#1E293B',
-          secondary: '#64748B',
+          primary: '#F8FAFC',
+          secondary: '#CBD5E1',
           light: '#94A3B8',
         },
       },

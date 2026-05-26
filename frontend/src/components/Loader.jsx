@@ -3,10 +3,10 @@ import { motion } from 'framer-motion';
 
 export default function Loader() {
   const messages = [
-    '📄 Extracting text from PDF...',
-    '🔍 Identifying factual claims...',
-    '🌐 Searching the web for each claim...',
-    '⚖️ Generating verification report...',
+    'Extracting text from PDF...',
+    'Identifying factual claims...',
+    'Searching the web for each claim...',
+    'Generating verification report...',
   ];
 
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);

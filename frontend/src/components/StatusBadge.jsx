@@ -6,25 +6,25 @@ export default function StatusBadge({ status }) {
       bg: 'bg-green-900/30',
       text: 'text-green-400',
       icon: CheckCircle,
-      label: '✅ Verified',
+      label: 'Verified',
     },
     Inaccurate: {
       bg: 'bg-amber-900/30',
       text: 'text-amber-400',
       icon: AlertCircle,
-      label: '⚠️ Inaccurate',
+      label: 'Inaccurate',
     },
     False: {
       bg: 'bg-red-900/30',
       text: 'text-red-400',
       icon: XCircle,
-      label: '❌ False',
+      label: 'False',
     },
     Unverifiable: {
       bg: 'bg-slate-700/30',
       text: 'text-slate-400',
       icon: HelpCircle,
-      label: '❓ Unverifiable',
+      label: 'Unverifiable',
     },
   };
 
