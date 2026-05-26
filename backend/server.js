@@ -30,7 +30,7 @@ app.use(express.json({ limit: '15mb' }));
 
 // Health check
 app.get('/', (req, res) => {
-  res.json({ status: 'FactGuard API is live' });
+  res.json({ status: 'FactFinder API is live' });
 });
 
 // Routes
@@ -57,8 +57,68 @@ const connectDB = async () => {
 
 connectDB();
 
-// Start server
+// Start server with retry logic
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-  console.log(`✓ FactGuard API running on port ${PORT}`);
+let server;
+let retries = 0;
+const maxRetries = 3;
+
+const startServer = (port) => {
+  try {
+    server = app.listen(port, () => {
+      console.log(`✓ FactGuard API running on port ${port}`);
+      retries = 0; // Reset on success
+    });
+
+    server.on('error', (error) => {
+      if (error.code === 'EADDRINUSE') {
+        console.log(`[Server] Port ${port} is in use, trying ${port + 1}...`);
+        if (retries < maxRetries) {
+          retries++;
+          startServer(port + 1);
+        } else {
+          console.error('[Server] Failed to find available port after retries');
+          process.exit(1);
+        }
+      } else {
+        throw error;
+      }
+    });
+  } catch (error) {
+    console.error('[Server] Error starting server:', error);
+    process.exit(1);
+  }
+};
+
+startServer(PORT);
+
+// Handle graceful shutdown
+process.on('SIGTERM', () => {
+  console.log('[Server] SIGTERM received, closing server gracefully');
+  if (server) {
+    server.close(() => {
+      console.log('[Server] Server closed');
+      process.exit(0);
+    });
+  }
+});
+
+process.on('SIGINT', () => {
+  console.log('[Server] SIGINT received, closing server gracefully');
+  if (server) {
+    server.close(() => {
+      console.log('[Server] Server closed');
+      process.exit(0);
+    });
+  }
+});
+
+// Handle uncaught exceptions
+process.on('uncaughtException', (error) => {
+  console.error('[Server] Uncaught Exception:', error);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[Server] Unhandled Rejection at:', promise, 'reason:', reason);
 });

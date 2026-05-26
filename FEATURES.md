@@ -1,4 +1,4 @@
-# 🎨 FactGuard - Redesigned with Light Theme & New Features
+# 🎨 FactFinder - Redesigned with Light Theme & New Features
 
 ## 🌟 What's New in This Version
 

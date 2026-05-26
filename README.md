@@ -1,6 +1,6 @@
-# 🛡️ FactGuard — AI-Powered Fact-Checking Agent
+# 🛡️ FactFinder — AI-Powered Fact-Checking Agent
 
-FactGuard is a high-performance, production-ready web application designed to automatically extract and verify factual claims from PDF documents in real-time. By leveraging state-of-the-art LLMs (Llama 3.3 70B via Groq) and live web searches (Tavily Search API), FactGuard flags claims as **Verified**, **Inaccurate**, or **False**, complete with detailed AI-generated explanations, correct figures, and citation links.
+FactFinder is a high-performance, production-ready web application designed to automatically extract and verify factual claims from PDF documents in real-time. By leveraging state-of-the-art LLMs (Llama 3.3 70B via Groq) and live web searches (Tavily Search API), FactFinder flags claims as **Verified**, **Inaccurate**, or **False**, complete with detailed AI-generated explanations, correct figures, and citation links.
 
 ## 🚀 Key Features
 

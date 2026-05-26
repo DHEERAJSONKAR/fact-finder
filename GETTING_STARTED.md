@@ -1,4 +1,4 @@
-# 🚀 Getting Started with FactGuard - Light Theme Edition
+# 🚀 Getting Started with FactFinder - Light Theme Edition
 
 ## Quick Start
 
@@ -301,7 +301,7 @@ CORS_ORIGIN=https://yourdomain.com
 ## 📞 Support & Issues
 
 - GitHub Issues: Report bugs or request features
-- Email: support@factguard.example.com
+- Email: support@factfinder.example.com
 - Discord: Join community for discussions
 
 ---

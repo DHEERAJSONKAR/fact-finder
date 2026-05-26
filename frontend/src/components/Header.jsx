@@ -12,7 +12,7 @@ export default function Header() {
       {/* Animated background gradient */}
       <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900"></div>
       <div className="absolute inset-0 bg-gradient-to-b from-brand-primary/10 to-transparent"></div>
-      
+
       {/* Animated grid pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{
@@ -20,7 +20,7 @@ export default function Header() {
           backgroundSize: '50px 50px'
         }}></div>
       </div>
-      
+
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         {/* Top bar with logo and tagline */}
         <div className="flex items-center justify-between mb-6">
@@ -37,14 +37,14 @@ export default function Header() {
             </motion.div>
             <div>
               <h1 className="text-5xl font-black bg-gradient-to-r from-white via-brand-primary to-brand-hover bg-clip-text text-transparent leading-tight">
-                FactGuard
+                FactFinder
               </h1>
               <p className="text-slate-400 text-xs font-semibold tracking-widest uppercase mt-1">
                 Truth Verification Platform
               </p>
             </div>
           </div>
-          
+
           {/* Badge */}
           <motion.div
             animate={{ y: [0, -5, 0] }}
@@ -55,7 +55,7 @@ export default function Header() {
             <span className="text-green-400 text-xs font-semibold">AI Active</span>
           </motion.div>
         </div>
-        
+
         {/* Subtitle with features */}
         <div className="flex flex-col gap-2">
           <p className="text-xl text-slate-200 font-light">
@@ -83,7 +83,7 @@ export default function Header() {
           </div>
         </div>
       </div>
-      
+
       {/* Bottom accent line */}
       <div className="relative h-px bg-gradient-to-r from-transparent via-brand-primary to-transparent"></div>
     </motion.header>

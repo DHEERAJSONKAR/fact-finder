@@ -1,4 +1,6 @@
-const pdfParse = require('pdf-parse');
+const pdfParseModule = require('pdf-parse');
+// Handle both default export and direct function export
+const pdfParse = pdfParseModule.default || pdfParseModule;
 
 // Configure pdf-parse with options for better compatibility
 const pdfOptions = {
@@ -43,7 +45,7 @@ async function pdfExtractor(buffer) {
 
   try {
     console.log('[pdfExtractor] Starting PDF parsing with buffer size:', buffer.length);
-    
+
     // Add timeout to prevent hanging
     const parsePromise = pdfParse(buffer, pdfOptions);
     const timeoutPromise = new Promise((_, reject) =>
@@ -51,7 +53,7 @@ async function pdfExtractor(buffer) {
     );
 
     const data = await Promise.race([parsePromise, timeoutPromise]);
-    
+
     if (!data.text || data.text.trim().length === 0) {
       console.warn('[pdfExtractor] PDF parsed but no text content extracted');
       throw new Error('No text content found in PDF. This may be a scanned PDF or image-based document.');

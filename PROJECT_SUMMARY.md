@@ -1,7 +1,7 @@
-# 🎉 Project Completion Summary - FactGuard Light Theme Edition
+# 🎉 Project Completion Summary - FactFinder Light Theme Edition
 
 ## Overview
-Successfully transformed the entire FactGuard fact-checking application from a dark theme to a modern, light theme with 6 powerful new features. The project now offers a professional, clean interface with enhanced functionality.
+Successfully transformed the entire FactFinder fact-checking application from a dark theme to a modern, light theme with 6 powerful new features. The project now offers a professional, clean interface with enhanced functionality.
 
 ## 📊 Work Completed
 

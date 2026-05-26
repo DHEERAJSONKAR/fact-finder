@@ -245,6 +245,6 @@ timeout: 180000,  // in milliseconds
 
 ---
 
-**You're ready to use FactGuard with all new features! 🎉**
+**You're ready to use FactFinder with all new features! 🎉**
 
 Last updated: 2024
